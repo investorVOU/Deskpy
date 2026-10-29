@@ -41,12 +41,15 @@ def get(url):
 
 def tg(msg):
     print(msg)
-    if not (TG_TOKEN and TG_CHAT): return
+    if not (TG_TOKEN and TG_CHAT):
+        print("TG ERROR: TG_TOKEN or TG_CHAT env var is empty"); return
     try:
-        requests.post(f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage",
-                      json={"chat_id": TG_CHAT, "text": msg[:4000]}, timeout=15)
-    except Exception:
-        pass
+        r = requests.post(f"https://api.telegram.org/bot{TG_TOKEN.strip()}/sendMessage",
+                          json={"chat_id": TG_CHAT.strip(), "text": msg[:4000]}, timeout=15)
+        if r.status_code != 200:
+            print("TG ERROR:", r.status_code, r.text)
+    except Exception as e:
+        print("TG ERROR:", e)
 
 # ---------------- storage / logger ----------------
 db = sqlite3.connect(DB, check_same_thread=False)
